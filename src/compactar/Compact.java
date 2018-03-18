@@ -8,6 +8,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.zip.ZipEntry;
@@ -15,7 +18,8 @@ import java.util.zip.ZipOutputStream;
 
 public class Compact {
 
-	 static final int TAMANHO_BUFFER = 4096;
+	static final int TAMANHO_BUFFER = 4096;
+	private static String [] signatureDB;
 	
 	 public static void compactarParaZip(String arquivoCompactar, String arquivoCompactado)throws IOException {
 
@@ -72,6 +76,39 @@ public class Compact {
 			e.printStackTrace();
 		}
 	}
+	 
+	private static void receiveInfo() {
+		// TODO Auto-generated method stub
+		
+		try {
+			ServerSocket server = new ServerSocket(6002);
+			
+			while(true) {
+				
+				Socket client = server.accept();
+		        ObjectInputStream saida = new ObjectInputStream(client.getInputStream());
+		        signatureDB = (String[]) saida.readObject();
+		        
+		        System.out.println("Virus detectados: ");
+		        for (int i = 0; i < signatureDB.length; i++) {
+		        	
+		        	System.out.println(signatureDB[i] + "; ");
+		        }
+		        
+		        saida.close();
+		        client.close();
+
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	
 	
 	public static void main(String[] args){
@@ -88,8 +125,8 @@ public class Compact {
 		}
 		
 		Compact.sendSock(arquivoCompactado);
+		Compact.receiveInfo();
 
 	}
-
 
 }
