@@ -5,13 +5,14 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -24,6 +25,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -165,7 +167,7 @@ public class Compact extends JFrame{
 			// TODO Auto-generated method stub
 			
 		 try {
-			Socket cliente = new Socket("127.0.0.1", 6001);
+			Socket cliente = new Socket("192.168.0.115", 6001);
 			mensagem.setText("Cliente Conectado na Porta 6001.");
 			
 			DataOutputStream saida = new DataOutputStream(cliente.getOutputStream());
@@ -199,24 +201,27 @@ public class Compact extends JFrame{
 		// TODO Auto-generated method stub
 		
 		try {
-			server = new ServerSocket(6002);
+			server = new ServerSocket(6004);
 			
 			while(true) {
 				
 				Socket client = server.accept();
-		        ObjectInputStream saida = new ObjectInputStream(client.getInputStream());
-		        signatureDB = (String[]) saida.readObject();
+				
+		        //PrintWriter saida = new PrintWriter(client.getInputStream().toString());
+		        //signatureDB = (String[]) saida.readObj ect();
+		       
+		        BufferedReader bf = new BufferedReader(new InputStreamReader(client.getInputStream()));
+		        String msg = bf.readLine();
+		        System.out.println(msg);
+		        JOptionPane.showMessageDialog(null, msg);
+		        //Compact.frame();
 		        
-		        Compact.frame();
-		        
-		        saida.close();
+		        //saida.close();
+		        bf.close();
 		        client.close();
 
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -263,7 +268,7 @@ public class Compact extends JFrame{
 			}
 		});
 		
-		//Compact.receiveInfo();
+		Compact.receiveInfo();
 
 	}
 
